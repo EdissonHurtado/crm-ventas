@@ -716,24 +716,24 @@
     let orderItems = [];
     let productsCatalog = [];      
 
-    // URL Backend Apps Script (Configurada para comunicación vía POST / fetch)
-    
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyCK6fgq_68OYdGZgSF-H_5B0LeG-BGTDj_SlXAQm7P8YD4XBTuUvumMTePi7Dbv_Zr2w/exec';
-   
-    // Función para enviar peticiones al backend de Google Apps Script
-    async function callBackend(action, payload = {}) {
-    try {
-    const response = await fetch(BACKEND_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
-      },
-      body: JSON.stringify({ action, ...payload })
-    });
+// URL Backend Apps Script (Configurada para comunicación vía POST / fetch)
 
-    if (!response.ok) throw new Error('Error en la respuesta del servidor');
-    return await response.json();
-  } catch (err) {
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyCK6fgq_68OYdGZgSF-H_5B0LeG-BGTDj_SlXAQm7P8YD4XBTuUvumMTePi7Dbv_Zr2w/exec';
+
+// Función para enviar peticiones al backend de Google Apps Script
+async function callBackend(action, payload = {}) {
+try {
+const response = await fetch(BACKEND_URL, {
+method: 'POST',
+headers: {
+'Content-Type': 'text/plain;charset=utf-8'
+},
+body: JSON.stringify({ action, ...payload })
+});
+
+if (!response.ok) throw new Error('Error en la respuesta del servidor');
+return await response.json();
+} catch (err) {
     console.error('Error en callBackend:', err);
     return { ok: false, error: err.message };
   }
