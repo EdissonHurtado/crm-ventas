@@ -893,15 +893,15 @@
     }
 
     // Llamadas al Backend
-    async function callBackend(action, data) {
-      const payload = { action, token: currentToken, ...data };
-      const response = await fetch(BACKEND_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      return await response.json();
-    }
+  async function callBackend(action, data) { 
+    const payload = { action, token: currentToken, ...data }; 
+    const response = await fetch(BACKEND\_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    return await response.json();
+  }
 
     function switchView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
