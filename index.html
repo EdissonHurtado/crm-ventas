@@ -714,13 +714,15 @@
     let activeClientId = null;
     let activeRuteroId = null;
     let orderItems = [];
-    let productsCatalog = [];
+    let productsCatalog = [];      
 
     // URL Backend Apps Script (Configurada para comunicación vía POST / fetch)
+    
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyCK6fgq_68OYdGZgSF-H_5B0LeG-BGTDj_SlXAQm7P8YD4XBTuUvumMTePi7Dbv_Zr2w/exec';
+   
     // Función para enviar peticiones al backend de Google Apps Script
-async function callBackend(action, payload = {}) {
-  try {
+    async function callBackend(action, payload = {}) {
+    try {
     const response = await fetch(BACKEND_URL, {
       method: 'POST',
       headers: {
