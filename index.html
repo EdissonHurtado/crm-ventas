@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexo CRM Commercial & Field Sales</title>
+  <title> CRM Commercial El rey de los Licore</title>
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Google Fonts: Inter / Manrope -->
@@ -435,7 +435,7 @@
     <div class="login-card">
       <div class="brand-logo">
         <div class="brand-icon"><i class="bi bi-shield-lock-fill"></i></div>
-        <div class="brand-title">NEXO <span>CRM</span></div>
+        <div class="brand-title">El Rey <span>dde los licores</span></div>
       </div>
       <p class="login-subtitle">Acceso seguro al portal comercial y ventas de campo</p>
       
@@ -717,8 +717,25 @@
     let productsCatalog = [];
 
     // URL Backend Apps Script (Configurada para comunicación vía POST / fetch)
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyCK6fgq_68OYdGZgSF-H_5B0LeG-BGTDj_SlXAQm7P8YD4XBTuUvumMTePi7Dbv_Zr2w/exec";
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyCK6fgq_68OYdGZgSF-H_5B0LeG-BGTDj_SlXAQm7P8YD4XBTuUvumMTePi7Dbv_Zr2w/exec';
+    // Función para enviar peticiones al backend de Google Apps Script
+async function callBackend(action, payload = {}) {
+  try {
+    const response = await fetch(BACKEND_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({ action, ...payload })
+    });
 
+    if (!response.ok) throw new Error('Error en la respuesta del servidor');
+    return await response.json();
+  } catch (err) {
+    console.error('Error en callBackend:', err);
+    return { ok: false, error: err.message };
+  }
+}
     // Manejo de Inicio de Sesión
     async function handleLogin(e) {
       e.preventDefault();
