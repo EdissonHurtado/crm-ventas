@@ -740,29 +740,42 @@
 }
     // Manejo de Inicio de Sesión
     async function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const errDiv = document.getElementById('loginError');
+  e.preventDefault();
+  
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const errDiv = document.getElementById('loginError');
 
-      try {
-        const res = await callBackend('login', { email, password });
-        if (res.ok) {
-          currentToken = res.token;
-          currentUser = res.user;
-          localStorage.setItem('nexoToken', currentToken);
-          localStorage.setItem('nexoUser', JSON.stringify(currentUser));
-          initApp();
-        } else {
-          errDiv.innerText = res.error || "Credenciales inválidas";
-          errDiv.style.display = 'block';
-        }
-      } catch (err) {
-        errDiv.innerText = "Error de conexión con el servidor";
-        errDiv.style.display = 'block';
+  errDiv.style.display = 'none';
+
+  try {
+    // 1. Enviamos petición al backend
+    const res = await callBackend('login', { email, password });
+    
+    // 2. Si el backend responde OK
+    if (res && res.ok) {
+      currentToken = res.token;
+      currentUser = res.user;
+      localStorage.setItem('nexoToken', currentToken);
+      localStorage.setItem('nexoUser', JSON.stringify(currentUser));
+
+      // Ocultar login y mostrar la app
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('appShell').style.display = 'block';
+
+      if (typeof initApp === 'function') {
+        initApp();
       }
+    } else {
+      errDiv.innerText = (res && res.error) ? res.error : "Credenciales inválidas";
+      errDiv.style.display = 'block';
     }
-
+  } catch (err) {
+    alert("Error detectado: " + err.message);
+    errDiv.innerText = "Error de conexión con el servidor";
+    errDiv.style.display = 'block';
+  }
+}
     // Inicializar Aplicación tras Login
     function initApp() {
       document.getElementById('loginView').style.display = 'none';
