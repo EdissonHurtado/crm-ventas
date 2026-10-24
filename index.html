@@ -348,8 +348,23 @@ async function loadCatalog() {
   $("#grid").innerHTML = `<div class="empty"><i class="fa-solid fa-plug-circle-exclamation"></i><h3>No se pudo conectar</h3><p style="max-width:56ch;margin:0 auto 6px">${esc(why)}</p><p style="font-size:.8rem;opacity:.7">Detalle técnico: ${esc(raw)}</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px"><button class="btn btn-brand" onclick="loadCatalog()">Reintentar</button><button class="btn btn-ghost" onclick="openCfg()">Cambiar URL</button><button class="btn btn-ghost" onclick="useItems(DEMO,true)">Ver catálogo de ejemplo</button></div></div>`;
 }
 function renderHero() {
-  const p = items.map(info).filter(x => x.ok && x.foto);
-  ["h1", "h2", "h3"].forEach((id, k) => { const x = p[k] || p[0]; $("#" + id).src = x ? imgUrl(x.foto, x.name) : placeholder("L"); $("#" + id).alt = x ? x.name : ""; });
+  // 1. Filtra los productos válidos con foto que pertenezcan al grupo "collage"
+  let p = items.map(info).filter(x => x.ok && x.foto && x.group.toLowerCase().trim() === "collage");
+
+  // 2. Si no hay suficientes o ninguno con "collage", completa con el resto de productos con foto
+  if (p.length < 3) {
+    const resto = items.map(info).filter(x => x.ok && x.foto && !p.includes(x));
+    p = [...p, ...resto];
+  }
+
+  // 3. Asigna cada una de las 3 imágenes a h1, h2 y h3
+  ["h1", "h2", "h3"].forEach((id, k) => {
+    const x = p[k] || p[0];
+    if ($("#" + id)) {
+      $("#" + id).src = x ? imgUrl(x.foto, x.name) : placeholder("L");
+      $("#" + id).alt = x ? x.name : "";
+    }
+  });
 }
 function renderChips() {
   const groups = [...new Set(items.map(info).map(p => p.group))];
