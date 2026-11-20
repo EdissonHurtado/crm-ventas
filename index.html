@@ -280,13 +280,6 @@ footer li i{margin-right:8px;color:var(--pollen)}
   <div class="d-foot" id="dFoot"></div>
 </aside>
 
-/*<div class="sheet" id="sheet"><div class="sheet-in" id="sheetIn"></div></div>
-<div class="sheet" id="cfg"><div class="sheet-in cfg">
-  <button class="icon-btn x" onclick="closeSheet('cfg')" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
-  <h3>Conexión con Google Sheets</h3><p>URL del Apps Script publicado (termina en <code>/exec</code>).</p>
-  <div class="fld"><input id="urlIn" placeholder="https://script.google.com/macros/s/.../exec"></div>
-  <div style="display:flex;gap:10px"><button class="btn btn-brand" id="saveUrl" style="flex:1">Guardar y conectar</button><button class="btn btn-ghost" id="testUrl">Probar</button></div>
-</div></div>*/
 <div class="toast" id="toast"><span id="toastT"></span><button id="toastB">Ver pedido</button></div>
 
 <script>
@@ -418,29 +411,59 @@ function add(id, delta = 1) {
 function sync() {
   saveCart();
   const n = count();
-  $("#badge").textContent = n; $("#badge").classList.remove("bump"); void $("#badge").offsetWidth; $("#badge").classList.add("bump");
-  $("#barN").textContent = n; $("#barT").textContent = money(total());
+  $("#badge").textContent = n;
+  $("#badge").classList.remove("bump");
+  void $("#badge").offsetWidth;
+  $("#badge").classList.add("bump");
+  $("#barN").textContent = n;
+  $("#barT").textContent = money(total());
   $("#bar").classList.toggle("on", n > 0 && !$("#drawer").classList.contains("on"));
-  renderGrid(); if (step < 2) renderDrawer();
+  renderGrid();
+  if (step < 2) renderDrawer();
 }
+
 let tt;
-function toast(msg) { $("#toastT").textContent = msg; $("#toast").classList.add("on"); clearTimeout(tt); tt = setTimeout(() => $("#toast").classList.remove("on"), 2600); }
-function openCart() { $("#drawer").classList.add("on"); $("#veil").classList.add("on"); $("#bar").classList.remove("on"); $("#toast").classList.remove("on"); if (step === 2) step = 0; renderDrawer(); }
-function closeCart() { $("#drawer").classList.remove("on"); $("#veil").classList.remove("on"); if (step === 2) { step = 0; } sync(); }
+function toast(msg) {
+  $("#toastT").textContent = msg;
+  $("#toast").classList.add("on");
+  clearTimeout(tt);
+  tt = setTimeout(() => $("#toast").classList.remove("on"), 2600);
+}
+
+function openCart() {
+  $("#drawer").classList.add("on");
+  $("#veil").classList.add("on");
+  $("#bar").classList.remove("on");
+  $("#toast").classList.remove("on");
+  if (step === 2) step = 0;
+  renderDrawer();
+}
+
+function closeCart() {
+  $("#drawer").classList.remove("on");
+  $("#veil").classList.remove("on");
+  if (step === 2) step = 0;
+  sync();
+}
 
 const F = { name: "", phone: "", addr: "", notes: "" };
+
 function renderDrawer() {
   $("#steps").querySelectorAll("i").forEach((e, k) => e.classList.toggle("on", k <= step));
   $("#dTitle").textContent = ["Tu pedido", "Datos de entrega", "¡Pedido enviado!"][step];
   const body = $("#dBody"), foot = $("#dFoot");
   if (step === 0) {
-    body.innerHTML = cart.length ? cart.map(i => `<div class="line"><img src="${esc(imgUrl(i.foto, i.nombre))}" alt="${esc(i.nombre)}"><div><b>${esc(i.nombre)}</b><small>${money(i.precio)} c/u</small><br><button class="rm" data-rm="${esc(i.id)}">Quitar</button></div><div class="step"><button data-q="-1" data-id="${esc(i.id)}" aria-label="Menos">−</button><span>${i.qty}</span><button data-q="1" data-id="${esc(i.id)}" aria-label="Más">+</button></div></div>`).join("")
+    body.innerHTML = cart.length
+      ? cart.map(i => `<div class="line"><img src="${esc(imgUrl(i.foto, i.nombre))}" alt="${esc(i.nombre)}"><div><b>${esc(i.nombre)}</b><small>${money(i.precio)} c/u</small><br><button class="rm" data-rm="${esc(i.id)}">Quitar</button></div><div class="step"><button data-q="-1" data-id="${esc(i.id)}" aria-label="Menos">−</button><span>${i.qty}</span><button data-q="1" data-id="${esc(i.id)}" aria-label="Más">+</button></div></div>`).join("")
       : '<div class="empty"><i class="fa-solid fa-bag-shopping"></i><h3>Aún no hay nada</h3><p>Agrega productos del catálogo y aparecerán aquí.</p></div>';
     foot.innerHTML = `<div class="tot"><span>Total</span><b>${money(total())}</b></div><button class="btn btn-brand" id="toForm" ${cart.length ? "" : "disabled"}>Continuar</button>`;
   } else if (step === 1) {
     const fld = (k, l, t, ph, req) => `<div class="fld" id="f-${k}"><label for="i-${k}">${l}${req ? " *" : ""}</label>${t === "area" ? `<textarea id="i-${k}" rows="2" placeholder="${ph}">${esc(F[k])}</textarea>` : `<input id="i-${k}" type="${t}" placeholder="${ph}" value="${esc(F[k])}">`}<small>Este dato es obligatorio</small></div>`;
     body.innerHTML = `<div class="sum">${cart.map(i => `<div><span>${i.qty} × ${esc(i.nombre)}</span><span>${money(i.precio * i.qty)}</span></div>`).join("")}</div>` +
-      fld("name", "Nombre completo", "text", "Ej. María López", 1) + fld("phone", "WhatsApp o teléfono", "tel", "Ej. 3101234567", 1) + fld("addr", "Dirección de entrega", "text", "Calle, número, barrio y ciudad", 1) + fld("notes", "Notas (opcional)", "area", "Colores, dedicatoria, horario…", 0);
+      fld("name", "Nombre completo", "text", "Ej. María López", 1) +
+      fld("phone", "WhatsApp o teléfono", "tel", "Ej. 3101234567", 1) +
+      fld("addr", "Dirección de entrega", "text", "Calle, número, barrio y ciudad", 1) +
+      fld("notes", "Notas (opcional)", "area", "Colores, dedicatoria, horario…", 0);
     foot.innerHTML = `<div class="tot"><span>Total</span><b>${money(total())}</b></div><button class="btn btn-brand" id="send">Confirmar pedido</button><button class="back" id="toCart">← Volver al pedido</button>`;
   } else {
     const o = lastOrder;
@@ -448,19 +471,33 @@ function renderDrawer() {
     foot.innerHTML = '<button class="btn btn-ghost" id="finish">Seguir viendo productos</button>';
   }
 }
+
 async function sendOrder() {
   let bad = false;
   ["name", "phone", "addr", "notes"].forEach(k => { F[k] = $("#i-" + k).value.trim(); });
   ["name", "phone", "addr"].forEach(k => { const e = !F[k]; $("#f-" + k).classList.toggle("err", e); bad = bad || e; });
   if (bad) { $(".fld.err input").focus(); return; }
-  const btn = $("#send"); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando…';
+  const btn = $("#send");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando…';
   const id = "PED-" + Math.floor(1000 + Math.random() * 9000), tot = total(), snap = cart.map(c => ({ ...c }));
   const payload = { action: "createOrder", data: { id_pedido: id, cliente: F.name, telefono: F.phone, direccion: F.addr, notas: F.notes || "Sin notas", productos: cart } };
-  try { await fetch(BACKEND_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }); }
-  catch (e) { btn.disabled = false; btn.textContent = "Confirmar pedido"; toast("No se pudo enviar. Revisa tu conexión e intenta de nuevo."); return; }
+  try {
+    await fetch(BACKEND_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = "Confirmar pedido";
+    toast("No se pudo enviar. Revisa tu conexión e intenta de nuevo.");
+    return;
+  }
   lastOrder = { id, total: tot, name: F.name, phone: F.phone, addr: F.addr, notes: F.notes, lines: snap };
-  cart = []; Object.keys(F).forEach(k => F[k] = ""); step = 2; sync(); renderDrawer();
+  cart = [];
+  Object.keys(F).forEach(k => F[k] = "");
+  step = 2;
+  sync();
+  renderDrawer();
 }
+
 function waLink(o) {
   let m = `🛒 *NUEVO PEDIDO ${o.id}*\n👤 ${o.name}\n📞 ${o.phone}\n📍 ${o.addr}\n`;
   if (o.notes) m += `📝 ${o.notes}\n`;
@@ -470,11 +507,17 @@ function waLink(o) {
 
 /* ====== DETALLE ====== */
 function openDetail(id) {
-  const p = find(id); if (!p) return;
+  const p = find(id);
+  const sheet = $("#sheet");
+  if (!p || !sheet) return;
   $("#sheetIn").innerHTML = `<button class="icon-btn x" onclick="closeSheet('sheet')" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button><img src="${esc(imgUrl(p.foto, p.name))}" alt="${esc(p.name)}"><div class="sheet-t"><span class="tag" style="position:static;align-self:flex-start;background:var(--soft)">${esc(p.group)}</span><h2>${esc(p.name)}</h2><p>${esc(p.desc)}</p><div class="price" style="font-size:1.9rem;margin-top:auto">${money(p.price)}</div><button class="btn btn-brand" ${p.ok ? `data-add="${esc(p.id)}" data-close="1"` : "disabled"}>${p.ok ? "Agregar al pedido" : "Agotado"}</button></div>`;
-  $("#sheet").classList.add("on");
+  sheet.classList.add("on");
 }
-function closeSheet(id) { $("#" + id).classList.remove("on"); }
+
+function closeSheet(id) {
+  const el = $("#" + id);
+  if (el) el.classList.remove("on");
+}
 
 /* ====== EVENTOS ====== */
 document.addEventListener("click", e => {
@@ -492,12 +535,13 @@ document.addEventListener("click", e => {
   else if (t.id === "waBtn") window.open(waLink(lastOrder), "_blank");
   else if (t.id === "finish") { closeCart(); location.hash = "#catalogo"; }
 });
+
 $("#q").addEventListener("input", e => { query = e.target.value; renderGrid(); });
 $("#sort").addEventListener("change", e => { sort = e.target.value; renderGrid(); });
 ["openCart", "bar", "toastB"].forEach(i => $("#" + i).addEventListener("click", openCart));
-$("#closeCart").addEventListener("click", closeCart); $("#veil").addEventListener("click", closeCart);
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeCart(); closeSheet("sheet"); closeSheet("cfg"); } if (e.ctrlKey && e.shiftKey && e.key === "A") { e.preventDefault(); openCfg(); } });
-
+$("#closeCart").addEventListener("click", closeCart);
+$("#veil").addEventListener("click", closeCart);
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeCart(); closeSheet("sheet"); } });
 /* Temas y tipografías */
 const THEMES = [
   { id: "arena-rosa", n: "🌸 Arena & Rosa Empolvado", d: "Estética artesanal · predeterminado", c: ["#FAF6F0", "#C88EA7", "#4A3E3D"] }
