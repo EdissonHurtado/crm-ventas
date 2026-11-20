@@ -263,7 +263,7 @@ footer li i{margin-right:8px;color:var(--pollen)}
     <div><h3>Elegance</h3><p>Detalles Naturales  artesanales para momentos especiales.</p></div>
     <ul>
       <li><i class="fa-solid fa-location-dot"></i>Pasto, Nariño · Envíos a todo el país</li>
-      <li><i class="fa-brands fa-whatsapp"></i><span id="waTxt"></span></li>
+      <li><i class="fa-brands fa-whatsapp"></i><a id="waTxt" href="#" target="_blank" rel="noopener"></a></li>
       <li><i class="fa-solid fa-envelope"></i>elegance</li>
     </ul>
   </div>
@@ -536,16 +536,24 @@ const saved = k => { try { return localStorage.getItem(k); } catch (e) {} };
 setFont(saved("al_font") || "bricolage");
 setTheme(saved("al_theme") || "arena-rosa");
 
-/* Configuración oculta (triple clic en el logo) */
-let clicks = 0, ct;
-$("#logo").addEventListener("click", () => { if (++clicks === 3) { clicks = 0; openCfg(); } clearTimeout(ct); ct = setTimeout(() => clicks = 0, 800); });
-function openCfg() { $("#urlIn").value = BACKEND_URL; $("#cfg").classList.add("on"); }
-$("#saveUrl").addEventListener("click", () => { const u = $("#urlIn").value.trim(); if (!u) return; BACKEND_URL = u; localStorage.setItem("nexo_backend_url", u); closeSheet("cfg"); loadCatalog(); toast("Conexión actualizada"); });
-$("#testUrl").addEventListener("click", async () => { try { await fetch($("#urlIn").value.trim() || BACKEND_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "ping" }) }); toast("Prueba enviada al Apps Script"); } catch (e) { toast("Error: " + e.message); } });
-$("#cfg").addEventListener("click", e => { if (e.target.id === "cfg") closeSheet("cfg"); });
+/* Navegación al Hero al hacer clic en el logo */
+$("#logo").addEventListener("click", (e) => {
+  e.preventDefault();
+  const hero = $("#hero") || document.querySelector(".hero");
+  if (hero) hero.scrollIntoView({ behavior: "smooth" });
+  else window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
-$("#waTxt").textContent = "+" + WA_NUMBER.replace(/^(\d{2})(\d{3})(\d{3})(\d+)$/, "$1 $2 $3 $4");
-sync(); loadCatalog();
+/* Enlaces directos a WhatsApp (Hero y Footer) */
+const waDirectUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hola Elegance Botanica, me gustaría información sobre sus detalles.")}`;
+const heroWa = $("#heroWaBtn");
+if (heroWa) heroWa.href = waDirectUrl;
+
+const footerWa = $("#waTxt");
+if (footerWa) {
+  footerWa.textContent = "+" + WA_NUMBER.replace(/^(\d{2})(\d{3})(\d{3})(\d+)$/, "$1 $2 $3 $4");
+  footerWa.href = waDirectUrl;
+}
 </script>
 </body>
 </html>
