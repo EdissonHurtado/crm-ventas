@@ -553,6 +553,8 @@ const footerWa = $("#waTxt");
 if (footerWa) {
   footerWa.textContent = "+" + WA_NUMBER.replace(/^(\d{2})(\d{3})(\d{3})(\d+)$/, "$1 $2 $3 $4");
   footerWa.href = waDirectUrl;
+sync();
+ loadCatalog();
 }
 </script>
 </body>
